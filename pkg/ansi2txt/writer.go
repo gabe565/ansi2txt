@@ -22,6 +22,7 @@ const (
 	stateNone state = iota
 	stateEscape
 	stateCSI
+	stateOSCFirst
 	stateOSC
 	stateIgnore
 )
@@ -49,7 +50,7 @@ func (w *Writer) Write(p []byte) (int, error) {
 			case '[':
 				w.state = stateCSI
 			case ']':
-				w.state = stateOSC
+				w.state = stateOSCFirst
 			case '%', '(', ')':
 				w.state = stateIgnore
 			}
@@ -57,14 +58,18 @@ func (w *Writer) Write(p []byte) (int, error) {
 			if b != ';' && (b < '0' || b > '9') && b != '?' {
 				w.state = stateNone
 			}
-		case stateOSC:
+		case stateOSCFirst:
 			if b <= '9' {
-				switch b {
-				case bell:
-					w.state = stateNone
-				case escape:
-					w.state = stateIgnore
-				}
+				w.state = stateOSC
+			} else {
+				w.state = stateNone
+			}
+		case stateOSC:
+			switch b {
+			case bell:
+				w.state = stateNone
+			case escape:
+				w.state = stateIgnore
 			}
 		case stateIgnore:
 			w.state = stateNone
