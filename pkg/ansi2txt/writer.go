@@ -26,13 +26,18 @@ const (
 	stateIgnore
 )
 
+const (
+	escape = 0x1B
+	bell   = 0x7
+)
+
 // Write writes data to w with ANSI escape sequences removed.
 func (w *Writer) Write(p []byte) (int, error) {
 	for i, b := range p {
 		switch w.state {
 		case stateNone:
 			switch b {
-			case '\x1b':
+			case escape:
 				w.state = stateEscape
 			default:
 				if err := w.w.WriteByte(b); err != nil {
@@ -54,9 +59,10 @@ func (w *Writer) Write(p []byte) (int, error) {
 			}
 		case stateOSC:
 			if b <= '9' {
-				if b == '\a' { // Bell
+				switch b {
+				case bell:
 					w.state = stateNone
-				} else if b == '\'' {
+				case escape:
 					w.state = stateIgnore
 				}
 			}
