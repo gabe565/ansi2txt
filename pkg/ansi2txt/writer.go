@@ -1,18 +1,19 @@
 package ansi2txt
 
 import (
-	"bufio"
 	"io"
+	"slices"
 )
 
 // NewWriter returns a new Writer that writes to w.
 func NewWriter(w io.Writer) *Writer {
-	return &Writer{w: bufio.NewWriter(w)}
+	return &Writer{w: w}
 }
 
 // A Writer writes data with ANSI escape sequences removed.
 type Writer struct {
-	w     *bufio.Writer
+	w     io.Writer
+	buf   []byte
 	state state
 }
 
@@ -34,16 +35,15 @@ const (
 
 // Write writes data to w with ANSI escape sequences removed.
 func (w *Writer) Write(p []byte) (int, error) {
-	for i, b := range p {
+	w.buf = slices.Grow(w.buf, len(p))
+	for _, b := range p {
 		switch w.state {
 		case stateNone:
 			switch b {
 			case escape:
 				w.state = stateEscape
 			default:
-				if err := w.w.WriteByte(b); err != nil {
-					return i, err
-				}
+				w.buf = append(w.buf, b)
 			}
 		case stateEscape:
 			switch b {
@@ -76,10 +76,13 @@ func (w *Writer) Write(p []byte) (int, error) {
 		}
 	}
 
-	return len(p), w.w.Flush()
+	_, err := w.w.Write(w.buf)
+	w.buf = w.buf[:0]
+	return len(p), err
 }
 
 // Reset clears the internal state.
 func (w *Writer) Reset() {
+	w.buf = nil
 	w.state = stateNone
 }
