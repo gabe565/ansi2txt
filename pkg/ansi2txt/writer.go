@@ -55,6 +55,9 @@ func (w *Writer) Write(p []byte) (int, error) {
 				w.state = stateOSCFirst
 			case '%', '(', ')':
 				w.state = stateIgnore
+			default:
+				w.buf = append(w.buf, b)
+				w.state = stateNone
 			}
 		case stateCSI:
 			if b != ';' && (b < '0' || b > '9') && b != '?' {
