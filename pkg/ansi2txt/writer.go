@@ -60,13 +60,16 @@ func (w *Writer) Write(p []byte) (int, error) {
 				w.state = stateNone
 			}
 		case stateCSI:
-			if b != ';' && (b < '0' || b > '9') && b != '?' {
+			switch b {
+			case ';', '?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			default:
 				w.state = stateNone
 			}
 		case stateOSCFirst:
-			if b <= '9' {
+			switch b {
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				w.state = stateOSC
-			} else {
+			default:
 				w.state = stateNone
 			}
 		case stateOSC:
