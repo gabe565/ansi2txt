@@ -35,7 +35,8 @@ const (
 
 // Write writes data to w with ANSI escape sequences removed.
 func (w *Writer) Write(p []byte) (int, error) {
-	w.buf = slices.Grow(w.buf, len(p))
+	w.buf = slices.Grow(w.buf[:0], len(p))
+
 	for _, b := range p {
 		switch w.state {
 		case stateNone:
@@ -76,9 +77,15 @@ func (w *Writer) Write(p []byte) (int, error) {
 		}
 	}
 
-	_, err := w.w.Write(w.buf)
-	w.buf = w.buf[:0]
-	return len(p), err
+	n, err := w.w.Write(w.buf)
+	switch {
+	case err != nil:
+		return n, err
+	case n < len(w.buf):
+		return n, io.ErrShortWrite
+	default:
+		return len(p), nil
+	}
 }
 
 // Reset clears the internal state.
