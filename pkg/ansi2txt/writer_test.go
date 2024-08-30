@@ -20,6 +20,7 @@ func TestWriter_Write(t *testing.T) {
 		{"blue", color.BlueString("blue"), "blue", require.NoError},
 		{"formatted", color.New(color.Bold, color.Italic).Sprint("formatted"), "formatted", require.NoError},
 		{"move cursor", "\x1b[10;10Hmove", "move", require.NoError},
+		{"bell", "a\x07bc", "abc", require.NoError},
 		{
 			"complex",
 			"foo\x1b[1mbar\x1b[0m\n" +

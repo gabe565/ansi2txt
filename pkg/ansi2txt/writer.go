@@ -43,6 +43,7 @@ func (w *Writer) Write(p []byte) (int, error) {
 			switch b {
 			case escape:
 				w.state = stateEscape
+			case bell:
 			default:
 				w.buf = append(w.buf, b)
 			}
