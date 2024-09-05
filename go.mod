@@ -1,6 +1,6 @@
 module github.com/gabe565/ansi2txt
 
-go 1.23.0
+go 1.23.1
 
 require (
 	github.com/mattn/go-isatty v0.0.20
