@@ -58,7 +58,7 @@ func (w *Writer) Write(p []byte) (int, error) {
 			case bell, 'A', 'B', 'C', 'D', 'E', 'H', 'I', 'J', 'K', 'M', 'N', 'O', 'S', 'T', 'Z', 'c', 's', 'u', '1', '2', '7', '8', '<', '=', '>':
 				w.state = stateNone
 			default:
-				w.buf = append(w.buf, b)
+				w.buf = append(w.buf, escape, b)
 				w.state = stateNone
 			}
 		case stateCSI:

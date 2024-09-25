@@ -23,7 +23,7 @@ func TestWriter_Write(t *testing.T) {
 		{"clear screen", "\x1b[2Jclear", "clear", require.NoError},
 		{"move cursor", "\x1b[10;10Hmove", "move", require.NoError},
 		{"bell", "a\x07bc", "abc", require.NoError},
-		{"only escape", "a\x1bbc", "abc", require.NoError},
+		{"only escape", "a\x1bbc", "a\x1bbc", require.NoError},
 		{"character set", "\x1b%Gabc", "abc", require.NoError},
 		{"hide cursor", "\x1b[?25lhidden\x1b[?25h", "hidden", require.NoError},
 		{"invalid escape sequence", "a\x1b[999mbc", "abc", require.NoError},
