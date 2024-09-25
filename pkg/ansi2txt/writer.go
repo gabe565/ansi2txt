@@ -20,12 +20,12 @@ type Writer struct {
 type state uint8
 
 const (
-	stateNone state = iota
-	stateEscape
-	stateCSI
-	stateOSCFirst
-	stateOSC
-	stateIgnore
+	stateDefault state = iota
+	stateEscaped
+	stateInCSI
+	stateStartOSC
+	stateInOSC
+	stateIgnoreNext
 )
 
 const (
@@ -39,50 +39,50 @@ func (w *Writer) Write(p []byte) (int, error) {
 
 	for _, b := range p {
 		switch w.state {
-		case stateNone:
+		case stateDefault:
 			switch b {
 			case escape:
-				w.state = stateEscape
+				w.state = stateEscaped
 			case bell:
 			default:
 				w.buf = append(w.buf, b)
 			}
-		case stateEscape:
+		case stateEscaped:
 			switch b {
 			case '[':
-				w.state = stateCSI
+				w.state = stateInCSI
 			case ']':
-				w.state = stateOSCFirst
+				w.state = stateStartOSC
 			case '%', '(', ')', '0', '3', '5', '6', '#':
-				w.state = stateIgnore
+				w.state = stateIgnoreNext
 			case bell, 'A', 'B', 'C', 'D', 'E', 'H', 'I', 'J', 'K', 'M', 'N', 'O', 'S', 'T', 'Z', 'c', 's', 'u', '1', '2', '7', '8', '<', '=', '>':
-				w.state = stateNone
+				w.state = stateDefault
 			default:
 				w.buf = append(w.buf, escape, b)
-				w.state = stateNone
+				w.state = stateDefault
 			}
-		case stateCSI:
+		case stateInCSI:
 			switch b {
 			case ';', '?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 			default:
-				w.state = stateNone
+				w.state = stateDefault
 			}
-		case stateOSCFirst:
+		case stateStartOSC:
 			switch b {
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-				w.state = stateOSC
+				w.state = stateInOSC
 			default:
-				w.state = stateNone
+				w.state = stateDefault
 			}
-		case stateOSC:
+		case stateInOSC:
 			switch b {
 			case bell:
-				w.state = stateNone
+				w.state = stateDefault
 			case escape:
-				w.state = stateIgnore
+				w.state = stateIgnoreNext
 			}
-		case stateIgnore:
-			w.state = stateNone
+		case stateIgnoreNext:
+			w.state = stateDefault
 		}
 	}
 
@@ -100,5 +100,5 @@ func (w *Writer) Write(p []byte) (int, error) {
 // Reset clears the internal state.
 func (w *Writer) Reset() {
 	w.buf = nil
-	w.state = stateNone
+	w.state = stateDefault
 }
