@@ -49,6 +49,7 @@ func TestWriter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf strings.Builder
+			buf.Grow(len(tt.input))
 			w := NewWriter(&buf)
 			got, err := w.Write([]byte(tt.input))
 			tt.wantErr(t, err)
