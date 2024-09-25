@@ -53,8 +53,10 @@ func (w *Writer) Write(p []byte) (int, error) {
 				w.state = stateCSI
 			case ']':
 				w.state = stateOSCFirst
-			case '%', '(', ')':
+			case '%', '(', ')', '0', '3', '5', '6', '#':
 				w.state = stateIgnore
+			case 'A', 'B', 'C', 'D', 'E', 'H', 'I', 'J', 'K', 'M', 'N', 'O', 'S', 'T', 'Z', 'c', 's', 'u', '1', '2', '7', '8', '<', '=', '>':
+				w.state = stateNone
 			default:
 				w.buf = append(w.buf, b)
 				w.state = stateNone
