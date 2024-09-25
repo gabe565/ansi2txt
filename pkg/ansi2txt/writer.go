@@ -29,8 +29,8 @@ const (
 )
 
 const (
-	escape = 0x1B
-	bell   = 0x7
+	escape byte = 0x1B
+	bell   byte = 0x7
 )
 
 // Write writes data to w with ANSI escape sequences removed.
