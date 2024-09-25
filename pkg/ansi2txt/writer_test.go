@@ -1,6 +1,7 @@
 package ansi2txt
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 
@@ -56,5 +57,30 @@ func TestWriter_Write(t *testing.T) {
 			assert.Equal(t, len(tt.input), got)
 			assert.Equal(t, tt.want, buf.String())
 		})
+	}
+}
+
+// From https://github.com/chalk/ansi-regex/blob/f338e1814144efb950276aac84135ff86b72dc8e/test.js#L64-L97
+func TestWriter_Write_AnsiCodes(t *testing.T) {
+	re, err := regexp.Compile(`\d$`) //nolint:gocritic
+	require.NoError(t, err)
+
+	for codeSetName, codeSet := range ansiCodes() {
+		for code, info := range codeSet {
+			t.Run(codeSetName+" "+info, func(t *testing.T) {
+				if re.MatchString(code) {
+					t.SkipNow()
+				}
+
+				input := "te\x1b" + code + "st"
+				var buf strings.Builder
+				buf.Grow(len(input))
+				w := NewWriter(&buf)
+				got, err := w.Write([]byte(input))
+				require.NoError(t, err)
+				assert.Equal(t, len(input), got)
+				assert.Equal(t, "test", buf.String(), code)
+			})
+		}
 	}
 }
