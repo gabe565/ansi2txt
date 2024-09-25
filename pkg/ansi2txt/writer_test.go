@@ -60,6 +60,8 @@ func TestWriter_Write(t *testing.T) {
 	}
 }
 
+const consumptionCharacters = `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+1234567890-=[]{};':"./>?,<\|`
+
 // From https://github.com/chalk/ansi-regex/blob/f338e1814144efb950276aac84135ff86b72dc8e/test.js#L64-L97
 func TestWriter_Write_AnsiCodes(t *testing.T) {
 	re, err := regexp.Compile(`\d$`) //nolint:gocritic
@@ -80,6 +82,23 @@ func TestWriter_Write_AnsiCodes(t *testing.T) {
 				require.NoError(t, err)
 				assert.Equal(t, len(input), got)
 				assert.Equal(t, "test", buf.String(), code)
+			})
+
+			t.Run(codeSetName+" "+info+" does not overconsume", func(t *testing.T) {
+				if re.MatchString(code) {
+					t.SkipNow()
+				}
+
+				for _, r := range consumptionCharacters {
+					input := "\x1b" + code + string(r)
+					var buf strings.Builder
+					buf.Grow(len(input))
+					w := NewWriter(&buf)
+					got, err := w.Write([]byte(input))
+					require.NoError(t, err)
+					assert.Equal(t, len(input), got)
+					assert.Equal(t, string(r), buf.String(), code)
+				}
 			})
 		}
 	}
