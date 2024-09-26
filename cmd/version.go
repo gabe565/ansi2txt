@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"runtime/debug"
-
-	"github.com/spf13/cobra"
 )
 
-func initVersion(cmd *cobra.Command) {
+func buildVersion(version string) string {
 	var commit string
 	var modified bool
 	if info, ok := debug.ReadBuildInfo(); ok {
@@ -29,9 +27,7 @@ func initVersion(cmd *cobra.Command) {
 		if modified {
 			commit = "*" + commit
 		}
-		cmd.Version = commit
-		cmd.SetVersionTemplate(`{{with .Name}}{{.}}{{end}} {{printf "commit %s" .Version}}
-`)
-		cmd.InitDefaultVersionFlag()
+		version += " (" + commit + ")"
 	}
+	return version
 }

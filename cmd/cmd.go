@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
+func New(options ...Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ansi2txt [file]",
 		Short: "Drop ANSI control codes",
@@ -18,7 +18,11 @@ It works as a filter, reading from stdin or a file, removing all ANSI codes, and
 		Args: cobra.MaximumNArgs(1),
 		RunE: run,
 	}
-	initVersion(cmd)
+
+	for _, option := range options {
+		option(cmd)
+	}
+
 	return cmd
 }
 
