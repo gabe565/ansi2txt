@@ -11,22 +11,37 @@ import (
 
 func New() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "ansi2txt",
+		Use:   "ansi2txt [file]",
 		Short: "Drop ANSI control codes",
 		Long: `Convert text containing ANSI control codes into plain ASCII text.
-It works as a filter, reading from stdin, removing all ANSI codes, and sending the output to stdout.`,
+It works as a filter, reading from stdin or a file, removing all ANSI codes, and sending the output to stdout.`,
+		Args: cobra.MaximumNArgs(1),
 		RunE: run,
 	}
 	initVersion(cmd)
 	return cmd
 }
 
-func run(cmd *cobra.Command, _ []string) error {
-	if isatty.IsTerminal(os.Stdin.Fd()) || isatty.IsCygwinTerminal(os.Stdin.Fd()) {
-		return cmd.Help()
+func run(cmd *cobra.Command, args []string) error {
+	w := ansi2txt.NewWriter(cmd.OutOrStdout())
+
+	if len(args) == 0 || args[0] == "-" {
+		if f, ok := cmd.InOrStdin().(*os.File); ok && isatty.IsTerminal(f.Fd()) || isatty.IsCygwinTerminal(f.Fd()) {
+			return cmd.Help()
+		}
+
+		_, err := io.Copy(w, cmd.InOrStdin())
+		return err
 	}
 
-	w := ansi2txt.NewWriter(cmd.OutOrStdout())
-	_, err := io.Copy(w, cmd.InOrStdin())
+	f, err := os.Open(args[0])
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = f.Close()
+	}()
+
+	_, err = io.Copy(w, f)
 	return err
 }
