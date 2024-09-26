@@ -87,3 +87,18 @@ brew install gabe565/tap/ansi2txt
 1. Download and run the [latest release binary](https://github.com/gabe565/ansi2txt/releases/latest) for your system and architecture.
 2. Extract the binary and place it in the desired directory.
 </details>
+
+## Usage
+
+If ansi2txt is run with no arguments, it will read data from stdin, filter control codes, and write to stdout. A filename argument can also be provided to filter the file's contents to stdout.
+
+### Examples
+
+1. Read data from stdin:
+   ```shell
+   ls --color=always | ansi2txt
+   ```
+2. Read data from a file:
+   ```shell
+   ansi2txt example.txt
+   ```
