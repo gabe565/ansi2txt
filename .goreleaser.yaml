@@ -1,0 +1,100 @@
+version: 2
+project_name: ansi2txt
+builds:
+  - env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s
+      - -w
+      - -X main.version={{.Version}}
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "7"
+    mod_timestamp: "{{.CommitTimestamp}}"
+archives:
+  - format: tar.gz
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+    builds_info:
+      group: 0
+      owner: 0
+    files:
+      - src: LICENSE
+        info: &info
+          owner: 0
+          group: 0
+          mtime: "{{.CommitDate}}"
+          mode: 0644
+      - src: README.md
+        info: *info
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  version_template: "{{ incpatch .Version }}-beta"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs'
+      - '^test'
+  groups:
+    - title: Breaking Changes
+      order: 0
+      regexp: '\)!:'
+    - title: Features
+      order: 0
+      regexp: "(feat)"
+    - title: Fixes
+      order: 1
+      regexp: "(fix|perf)"
+    - title: Others
+      order: 999
+brews:
+  - homepage: https://github.com/gabe565/ansi2txt
+    description: Convert text containing ANSI control codes into plain ASCII text.
+    license: MIT
+    repository:
+      owner: gabe565
+      name: homebrew-tap
+    directory: Formula
+nfpms:
+  - id: packages
+    vendor: Gabe Cook
+    homepage: https://github.com/gabe565/ansi2txt
+    description: Convert text containing ANSI control codes into plain ASCII text.
+    license: MIT
+    maintainer: Gabe Cook <gabe565@gmail.com>
+    formats:
+      - deb
+      - rpm
+publishers:
+  - name: fury.io
+    ids:
+      - packages
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
+aurs:
+  - name: ansi2txt-bin
+    homepage: https://github.com/gabe565/ansi2txt
+    description: Convert text containing ANSI control codes into plain ASCII text.
+    maintainers:
+      - Gabe Cook <gabe565@gmail.com>
+    license: MIT
+    private_key: '{{ .Env.AUR_SSH_KEY }}'
+    git_url: ssh://aur@aur.archlinux.org/ansi2txt-bin.git
+    skip_upload: auto
+    package: |-
+      # bin
+      install -Dm755 ansi2txt "${pkgdir}/usr/bin/ansi2txt"
+      # license
+      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/ansi2txt/LICENSE"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
