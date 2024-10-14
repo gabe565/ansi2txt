@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/gabe565/ansi2txt/cmd"
+	"gabe565.com/ansi2txt/cmd"
 )
 
 var version = "beta"

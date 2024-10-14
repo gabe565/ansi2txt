@@ -1,4 +1,4 @@
-module github.com/gabe565/ansi2txt
+module gabe565.com/ansi2txt
 
 go 1.23.1
 

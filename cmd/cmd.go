@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/gabe565/ansi2txt/pkg/ansi2txt"
+	"gabe565.com/ansi2txt/pkg/ansi2txt"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
