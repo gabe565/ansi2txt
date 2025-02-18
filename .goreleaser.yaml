@@ -58,8 +58,11 @@ changelog:
     - title: Fixes
       order: 1
       regexp: "(fix|perf)"
-    - title: Others
+    - title: Dependencies
       order: 999
+      regexp: '\(deps\):'
+    - title: Others
+      order: 998
 brews:
   - homepage: https://github.com/gabe565/ansi2txt
     description: Convert text containing ANSI control codes into plain ASCII text.
