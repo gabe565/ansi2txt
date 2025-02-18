@@ -4,12 +4,14 @@ import (
 	"os"
 
 	"gabe565.com/ansi2txt/cmd"
+	"gabe565.com/utils/cobrax"
 )
 
 var version = "beta"
 
 func main() {
-	if err := cmd.New(cmd.WithVersion(version)).Execute(); err != nil {
+	root := cmd.New(cobrax.WithVersion(version))
+	if err := root.Execute(); err != nil {
 		os.Exit(1)
 	}
 }

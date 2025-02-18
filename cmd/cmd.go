@@ -5,11 +5,12 @@ import (
 	"os"
 
 	"gabe565.com/ansi2txt/pkg/ansi2txt"
-	"github.com/mattn/go-isatty"
+	"gabe565.com/utils/cobrax"
+	"gabe565.com/utils/termx"
 	"github.com/spf13/cobra"
 )
 
-func New(options ...Option) *cobra.Command {
+func New(options ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ansi2txt [file]",
 		Short: "Drop ANSI control codes",
@@ -30,7 +31,7 @@ func run(cmd *cobra.Command, args []string) error {
 	w := ansi2txt.NewWriter(cmd.OutOrStdout())
 
 	if len(args) == 0 || args[0] == "-" {
-		if f, ok := cmd.InOrStdin().(*os.File); ok && isatty.IsTerminal(f.Fd()) || isatty.IsCygwinTerminal(f.Fd()) {
+		if termx.IsTerminal(cmd.InOrStdin()) {
 			return cmd.Help()
 		}
 

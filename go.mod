@@ -3,17 +3,17 @@ module gabe565.com/ansi2txt
 go 1.24.0
 
 require (
-	github.com/mattn/go-isatty v0.0.20
+	gabe565.com/utils v0.0.0-20250218053544-40f17d09c725
+	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 )
-
-require github.com/spf13/cobra v1.9.1
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
