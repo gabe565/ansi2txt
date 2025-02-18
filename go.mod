@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/mattn/go-isatty v0.0.20
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )
 
 require github.com/spf13/cobra v1.9.1
