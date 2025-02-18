@@ -16,6 +16,10 @@ builds:
     goarm:
       - "7"
     mod_timestamp: "{{.CommitTimestamp}}"
+    ignore:
+      - goos: windows
+        goarch: arm
+        goarm: 7
 archives:
   - formats: tar.gz
     # use zip for windows archives
