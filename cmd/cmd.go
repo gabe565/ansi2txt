@@ -32,7 +32,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 	if len(args) == 0 || args[0] == "-" {
 		if termx.IsTerminal(cmd.InOrStdin()) {
-			return cmd.Help()
+			return cmd.Usage()
 		}
 
 		_, err := io.Copy(w, cmd.InOrStdin())
